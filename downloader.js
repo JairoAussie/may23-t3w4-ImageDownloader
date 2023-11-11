@@ -16,18 +16,40 @@ const { finished } = require("node:stream/promises");
 // /folder/subfolder/filename.png
 const path = require("node:path");
 
+const API_URL_BASE = "https://pokeapi.co/api/v2/pokemon/"
+
 function downloadPokemonPicture (targetId = getRandomPokemonId()){
 
 }
 
 // Generate a random number between 1 and 1017 (number of Pokemons ???)
 function getRandomPokemonId(){
-
+    return math.floor(math.random() * 1017) +1;
 }
 
 //Retrieve Pokemon data for that number
 //Retrieve the image url from that Pokemon data
 async function getPokemonPictureUrl(targetId = getRandomPokemonId()){
+    //Retrieve the API data
+    let response = await fetch(API_URL_BASE + targetId).catch(error => {
+        throw new Error("API failure");
+    });
+
+    if (response.status == "404") {
+        throw new Error("API did not have data for the requested ID")
+    };
+
+    //Convert the response into usable JSON
+    let data = await response.json().catch(error => {
+        throw new Error("API did not return valid JSON");
+    })
+
+    // it contains unnecessary variables
+    // let imageURL = data.sprites.other["official-artwork"].front_default;
+    // return imageURL;
+
+    // Optimised return
+    return data.sprites.other["official-artwork"].front_default;
 
 }
 
