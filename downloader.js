@@ -19,7 +19,18 @@ const path = require("node:path");
 const API_URL_BASE = "https://pokeapi.co/api/v2/pokemon/"
 
 function downloadPokemonPicture (targetId = getRandomPokemonId()){
-
+    return new Promise (async (resolve, reject) => {
+        try {
+            //step 1: get the image URL
+            let newUrl = await getPokemonPictureUrl(targetId);
+            //step 2: do the download
+            let saveFileLocation = await savePokemonPictureToDisk(newUrl, "ExampleImage.png", "storage");
+            resolve(saveFileLocation);
+        } catch (error) {
+            reject (error);
+        }
+        
+    })
 }
 
 // Generate a random number between 1 and 1017 (number of Pokemons ???)
