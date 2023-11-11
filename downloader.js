@@ -35,7 +35,7 @@ function downloadPokemonPicture (targetId = getRandomPokemonId()){
 
 // Generate a random number between 1 and 1017 (number of Pokemons ???)
 function getRandomPokemonId(){
-    return math.floor(math.random() * 1017) +1;
+    return Math.floor(Math.random() * 1017) +1;
 }
 
 //Retrieve Pokemon data for that number
