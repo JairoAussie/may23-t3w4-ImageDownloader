@@ -56,7 +56,29 @@ async function getPokemonPictureUrl(targetId = getRandomPokemonId()){
 //Download that image and save it to the computer
 // Return the downloader image's file path
 async function savePokemonPictureToDisk(targetUrl, targetDownloadFilename, targetDownloadDirectory = "."){
+    //fetch request to the imageURL
+    let imageData = await fetch(targetUrl).catch(error => {
+        throw new Error("Image failed to download");
+    });
 
+    // Check if Target Directory exists
+    if (!fs.existsSync(targetDownloadDirectory)){
+        // Make  a directory if we need to
+        await mkdir(targetDownloadDirectory);
+    }
+
+    // Create a JS-friendly file path
+    let fullFileDestination = path.join(targetDownloadDirectory, targetDownloadFilename);
+    
+    // Stream the image from the fetch to the computer
+    let fileDownloadStream = fs.createWriteStream(fullFileDestination);
+
+    // get data as bytes from the web request,  --- pipe the bytes into the hard drive
+    await finished(Readable.fromWeb(imageData.body).pipe(fileDownloadStream)).catch(error => {
+        throw new Error("Failed to save content to disk")
+    });
+    //return the saved image location
+    return fullFileDestination;
 }
 
 module.exports = {
