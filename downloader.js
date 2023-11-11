@@ -22,18 +22,21 @@ function downloadPokemonPicture (targetId = getRandomPokemonId()){
     return new Promise (async (resolve, reject) => {
         try {
             //step 1: get the image URL
-            let newUrl = await getPokemonPictureUrl(targetId);
+            let newPokemon = await getPokemonPictureUrlandName(targetId);
             //step 2: do the download
             //option 1: hardcoded filename to ExampleImage
             //let saveFileLocation = await savePokemonPictureToDisk(newUrl, "ExampleImage.png", "storage");
             //option2: Pokemon + id, not identifiable, we want the name 
             //let saveFileLocation = await savePokemonPictureToDisk(newUrl, `Pokemon${targetId}.png`, "storage");
             
-            //option 3: pokemon name.png as we wanted
-            let response = await fetch(API_URL_BASE + targetId)
-            let data = await response.json();
+            //option 3: pokemon name.png as we wanted, a second fetch though
+            // let response = await fetch(API_URL_BASE + targetId)
+            // let data = await response.json();
         
-            let saveFileLocation = await savePokemonPictureToDisk(newUrl, `${data.name}.png`, "storage");
+            // let saveFileLocation = await savePokemonPictureToDisk(newUrl, `${data.name}.png`, "storage");
+            
+            //Option 4, changed the first fetch and returns an object with the name and image URL
+            let saveFileLocation = await savePokemonPictureToDisk(newPokemon.imageUrl, `${newPokemon.name}.png`, "storage");
 
             resolve(saveFileLocation);
         } catch (error) {
@@ -50,7 +53,7 @@ function getRandomPokemonId(){
 
 //Retrieve Pokemon data for that number
 //Retrieve the image url from that Pokemon data
-async function getPokemonPictureUrl(targetId = getRandomPokemonId()){
+async function getPokemonPictureUrlandName(targetId = getRandomPokemonId()){
     //Retrieve the API data
     let response = await fetch(API_URL_BASE + targetId).catch(error => {
         throw new Error("API failure");
@@ -69,8 +72,12 @@ async function getPokemonPictureUrl(targetId = getRandomPokemonId()){
     // let imageURL = data.sprites.other["official-artwork"].front_default;
     // return imageURL;
 
-    // Optimised return
-    return data.sprites.other["official-artwork"].front_default;
+    // // Optimised return
+    // return data.sprites.other["official-artwork"].front_default;
+    return {
+        name: data.name,
+        imageUrl: data.sprites.other["official-artwork"].front_default
+    }
 
 }
 
@@ -104,7 +111,7 @@ async function savePokemonPictureToDisk(targetUrl, targetDownloadFilename, targe
 
 module.exports = {
     downloadPokemonPicture,
-    getPokemonPictureUrl,
+    getPokemonPictureUrlandName,
     savePokemonPictureToDisk,
     getRandomPokemonId
 }
